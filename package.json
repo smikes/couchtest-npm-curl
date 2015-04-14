@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/smikes/couchtest-npm-curl/issues"
   },
-  "homepage": "https://github.com/smikes/couchtest-npm-curl"
+  "homepage": "https://github.com/smikes/couchtest-npm-curl",
+  "devDependencies": {
+    "catch": "~1.0.48"
+  }
 }
