@@ -25,6 +25,8 @@
 
 #include <string>
 
+#include "./rev.h"
+
 struct userdata
 {
   std::string s;
@@ -32,12 +34,12 @@ struct userdata
 
 size_t write_tostring(char *ptr, size_t size, size_t nmemb, void *userdata)
 {
-  userdata * ud = static_cast<userdata *>(userdata);
+  struct userdata * ud = static_cast<struct userdata *>(userdata);
 
   ud->s.append(ptr, (size * nmemb));
 
   // and log to stdout
-  fwrite(ptr, size, nmemb, stdout);
+  return fwrite(ptr, size, nmemb, stdout);
 }
 
 
@@ -71,7 +73,7 @@ int main(void)
     /* rewind */
     fseek(pf, 0, SEEK_SET);
 
-    /* Perform the request, res will get the return code */
+    /* Perform the request again, res will get the return code */
     res = curl_easy_perform(curl);
     /* Check for errors */
     if(res != CURLE_OK)
@@ -79,7 +81,7 @@ int main(void)
               curl_easy_strerror(res));
 
 
-    userdata get_result;
+    struct userdata get_result;
 
     curl_easy_setopt(curl, CURLOPT_PUT, 0L);
     curl_easy_setopt(curl, CURLOPT_READDATA, 0);
@@ -95,23 +97,27 @@ int main(void)
               curl_easy_strerror(res));
 
       
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, NULL;
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL;
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, stdout);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
 
     // do something that gets the name
     // "_rev":"1-9a1b90d9570c2c6183949f2b6fd8fd79"
-    const char * lead_in = "\"_rev\":\"";
-    size_t offset = get_result.s.find(lead_in);
-    if (offset != string::npos) {
+    std::string rev = extract_rev(get_result.s);
+    std::string newRev = "http://127.0.0.1:15986/-/user/org.couchdb.user:user/-rev/";
+    newRev += rev;
 
-      
-    // curl_easy_setopt(curl, CURLOPT_URL, "");
-    // "http://127.0.0.1:15986/-/user/org.couchdb.user:user/-rev/1-c12404fd76fc533601e72d41c116336a"
-    // 
+    curl_easy_setopt(curl, CURLOPT_URL, newRev.c_str());
+    curl_easy_setopt(curl, CURLOPT_PUT, 1L);
+    curl_easy_setopt(curl, CURLOPT_READDATA, pf);
 
+    fseek(pf, 0, SEEK_SET);
 
-    }
-
+    /* Perform the request, res will get the return code */
+    res = curl_easy_perform(curl);
+    /* Check for errors */
+    if(res != CURLE_OK)
+      fprintf(stderr, "curl_easy_perform() failed: %s\n",
+              curl_easy_strerror(res));
 
     /* always cleanup */
     fclose(pf);

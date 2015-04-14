@@ -1,1 +1,1 @@
-{"_id":"org.couchdb.user:user","name":"user","password":"pass@:!%","email":"email@example.com","type":"user","roles":[],"date":"2015-04-09T18:05:24.117Z"}
+{"_id":"org.couchdb.user:user","name":"user","password":"pass@:!%'","email":"email@example.com","type":"user","roles":[],"date":"2015-04-09T18:05:24.117Z"}
